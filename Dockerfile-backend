@@ -1,0 +1,21 @@
+FROM node:0.12
+ENV MQLIGHT_FISHALIVE_HOME /opt/mqlight-fishalive-node
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update -qqy \
+  && apt-get install -qqy --no-install-recommends \
+       curl \
+       >/dev/null \
+  && mkdir -p ${MQLIGHT_FISHALIVE_HOME} \
+  && curl -SL https://github.com/ibm-messaging/mqlight-fishalive-node/tarball/master | tar -zx --strip-components 1 -C ${MQLIGHT_FISHALIVE_HOME} \
+  && cd ${MQLIGHT_FISHALIVE_HOME}/backend \
+  && npm install \
+  && apt-get clean autoclean -y \
+  && rm -rf /tmp/* \
+       /var/cache/apt/* \
+       /var/lib/apt/lists/* \
+       /var/lib/cache/* \
+       /var/lib/log/* \
+       /var/tmp/*
+WORKDIR ${MQLIGHT_FISHALIVE_HOME}/backend
+VOLUME ${MQLIGHT_FISHALIVE_HOME}/backend
+CMD [ "npm", "start" ]
